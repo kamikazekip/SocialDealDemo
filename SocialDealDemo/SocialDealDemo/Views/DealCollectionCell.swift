@@ -1,18 +1,19 @@
 //
-//  DealCard.swift
+//  DealCollectionCell.swift
 //  SocialDealDemo
 //
 //  Created by Erik Brandsma on 27/04/2025.
 //
 
+import Domain
 import UIKit
 
-class DealCard: UIView {
+class DealCollectionCell: UICollectionViewCell {
+    static let reuseIdentifier = "DealCollectionCell"
+    
     private enum Constants {
         static let imageViewCornerRadius: CGFloat = 6
     }
-    
-    private let deal: Deal
     
     private let imageView: UIImageView = {
         let imageView = UIImageView(frame: .zero)
@@ -68,59 +69,58 @@ class DealCard: UIView {
         return priceStackView
     }()
     
-    init(deal: Deal) {
-        self.deal = deal
-        
-        super.init(frame: .zero)
+    override init(frame: CGRect) {
+        super.init(frame: frame)
         setupView()
     }
     
     required init?(coder: NSCoder) {
-        fatalError("Storyboard not implemented for this class")
+        fatalError("init(coder:) has not been implemented")
     }
     
     private func setupView() {
-        translatesAutoresizingMaskIntoConstraints = false
-        
-        // TODO: Set the image
-        titleLabel.text = deal.title
-        companyLabel.text = deal.company
-        cityLabel.text = deal.city
-        soldLabel.text = deal.soldLabel
-        fromPriceLabel.text = deal.prices.fromPrice.formattedString
-        priceLabel.text = deal.prices.price.formattedString
-
-        addSubview(imageView)
-        addSubview(titleLabel)
-        addSubview(companyLabel)
-        addSubview(cityLabel)
-        addSubview(bottomLabelStack)
+        contentView.addSubview(imageView)
+        contentView.addSubview(titleLabel)
+        contentView.addSubview(companyLabel)
+        contentView.addSubview(cityLabel)
+        contentView.addSubview(bottomLabelStack)
         bottomLabelStack.addArrangedSubview(soldLabel)
         bottomLabelStack.addArrangedSubview(priceStackView)
         priceStackView.addArrangedSubview(fromPriceLabel)
         priceStackView.addArrangedSubview(priceLabel)
         
         NSLayoutConstraint.activate([
-            imageView.topAnchor.constraint(equalTo: topAnchor),
-            imageView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            imageView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            imageView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             imageView.heightAnchor.constraint(equalTo: imageView.widthAnchor, multiplier: 1/3),
             
             titleLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor),
-            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
-            titleLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
+            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             
             companyLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor),
-            companyLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
-            companyLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
+            companyLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            companyLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             
             cityLabel.topAnchor.constraint(equalTo: companyLabel.bottomAnchor),
-            cityLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
-            cityLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
+            cityLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            cityLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             
             bottomLabelStack.topAnchor.constraint(equalTo: cityLabel.bottomAnchor),
-            bottomLabelStack.leadingAnchor.constraint(equalTo: leadingAnchor),
-            bottomLabelStack.trailingAnchor.constraint(equalTo: trailingAnchor),
+            bottomLabelStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            bottomLabelStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
         ])
+    }
+    
+    public func configure(with deal: Deal) {
+        // TODO: Set the image
+        titleLabel.text = deal.title
+        companyLabel.text = deal.company
+        cityLabel.text = deal.city
+        soldLabel.text = deal.soldLabel
+        fromPriceLabel.isHidden = deal.prices.fromPrice != nil
+        fromPriceLabel.text = deal.prices.fromPrice?.formattedString
+        priceLabel.text = deal.prices.price.formattedString
     }
 }

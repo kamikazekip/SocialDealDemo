@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		03364C1A2DC14D9D0098CC7F /* Domain in Frameworks */ = {isa = PBXBuildFile; productRef = 03364C192DC14D9D0098CC7F /* Domain */; };
+		03364C1D2DC14F580098CC7F /* Networking in Frameworks */ = {isa = PBXBuildFile; productRef = 03364C1C2DC14F580098CC7F /* Networking */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		0319CC9D2DBEBEE6003E2FC0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -65,6 +70,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				03364C1D2DC14F580098CC7F /* Networking in Frameworks */,
+				03364C1A2DC14D9D0098CC7F /* Domain in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -91,6 +98,7 @@
 				0319CC882DBEBEDF003E2FC0 /* SocialDealDemo */,
 				0319CC9F2DBEBEE6003E2FC0 /* SocialDealDemoTests */,
 				0319CCA92DBEBEE7003E2FC0 /* SocialDealDemoUITests */,
+				03364C1B2DC14F580098CC7F /* Frameworks */,
 				0319CC872DBEBEDF003E2FC0 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -103,6 +111,13 @@
 				0319CCA62DBEBEE7003E2FC0 /* SocialDealDemoUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		03364C1B2DC14F580098CC7F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -125,6 +140,8 @@
 			);
 			name = SocialDealDemo;
 			packageProductDependencies = (
+				03364C192DC14D9D0098CC7F /* Domain */,
+				03364C1C2DC14F580098CC7F /* Networking */,
 			);
 			productName = SocialDealDemo;
 			productReference = 0319CC862DBEBEDF003E2FC0 /* SocialDealDemo.app */;
@@ -208,6 +225,10 @@
 			);
 			mainGroup = 0319CC7D2DBEBEDF003E2FC0;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				035D730B2DC14C9D003B0696 /* XCLocalSwiftPackageReference "Packages/Networking" */,
+				03364C182DC14D9D0098CC7F /* XCLocalSwiftPackageReference "Packages/Domain" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 0319CC872DBEBEDF003E2FC0 /* Products */;
 			projectDirPath = "";
@@ -567,6 +588,29 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		03364C182DC14D9D0098CC7F /* XCLocalSwiftPackageReference "Packages/Domain" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/Domain;
+		};
+		035D730B2DC14C9D003B0696 /* XCLocalSwiftPackageReference "Packages/Networking" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/Networking;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		03364C192DC14D9D0098CC7F /* Domain */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Domain;
+		};
+		03364C1C2DC14F580098CC7F /* Networking */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 035D730B2DC14C9D003B0696 /* XCLocalSwiftPackageReference "Packages/Networking" */;
+			productName = Networking;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 0319CC7E2DBEBEDF003E2FC0 /* Project object */;
 }
