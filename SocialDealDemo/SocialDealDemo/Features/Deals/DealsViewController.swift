@@ -7,20 +7,9 @@
 
 import UIKit
 
-class DealsViewController: UIViewController {
+class DealsViewController: UITableViewController {
     private let viewModel: DealsViewModel
     
-    private let collectionView: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .vertical
-        layout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
-        layout.minimumLineSpacing = 16
-        layout.sectionInset = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        collectionView.register(DealCollectionCell.self, forCellWithReuseIdentifier: DealCollectionCell.reuseIdentifier)
-        return collectionView
-    }()
     private let activityIndicator: UIActivityIndicatorView = {
         let activityIndicator = UIActivityIndicatorView(style: .large)
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
@@ -38,27 +27,32 @@ class DealsViewController: UIViewController {
         
     init(viewModel: DealsViewModel = DealsViewModel()) {
         self.viewModel = viewModel
-        
-        super.init(nibName: nil, bundle: nil)
+        super.init(style: .insetGrouped)
+        commonInit()
     }
     
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        self.viewModel = DealsViewModel()
+        super.init(style: .insetGrouped)
+        commonInit()
+    }
+    
+    private func commonInit() {
+        navigationItem.title = "Deals"
+        navigationItem.largeTitleDisplayMode = .automatic
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        tableView.backgroundColor = .systemBackground
+        tableView.register(DealTableViewCell.self, forCellReuseIdentifier: DealTableViewCell.reuseIdentifier)
+        tableView.separatorStyle = .none
+        tableView.directionalLayoutMargins = .init(top: .zero, leading: 12, bottom: .zero, trailing: 12)
         
-        view.addSubview(collectionView)
         view.addSubview(activityIndicator)
         view.addSubview(errorLabel)
                 
         NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: view.topAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            
             activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             
@@ -66,8 +60,6 @@ class DealsViewController: UIViewController {
             errorLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             errorLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
         ])
-        
-        collectionView.dataSource = self
         
         fetchDeals()
     }
@@ -87,25 +79,38 @@ class DealsViewController: UIViewController {
                 }
                 
                 self?.errorLabel.isHidden = true
-                self?.collectionView.reloadData()
+                self?.tableView.reloadData()
             }
         }
     }
 }
 
-extension DealsViewController: UICollectionViewDataSource {
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        viewModel.deals.count
+extension DealsViewController {
+    override func numberOfSections(in tableView: UITableView) -> Int {
+        return viewModel.deals.count
     }
     
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        1
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 1
     }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: DealCollectionCell.reuseIdentifier, for: indexPath) as! DealCollectionCell
-        let model = viewModel.deals[indexPath.section]
-        cell.configure(with: model)
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: DealTableViewCell.reuseIdentifier, for: indexPath) as! DealTableViewCell
+        cell.configure(with: viewModel.deals[indexPath.section])
         return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let view = UIView()
+        view.backgroundColor = .clear
+        return view
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 20
+    }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
     }
 }

@@ -16,7 +16,6 @@ public class DealsAPI {
         
         let (data, _) = try await URLSession.shared.data(from: url)
         let decoder = JSONDecoder()
-        print(String(data: data, encoding: .utf8))
         let response = try decoder.decode(DealsResponse.self, from: data)
         return response.deals
     }
