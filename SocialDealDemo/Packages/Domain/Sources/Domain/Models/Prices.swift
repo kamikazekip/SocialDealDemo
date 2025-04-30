@@ -19,4 +19,11 @@ public struct Prices: Codable, Equatable, Sendable {
     public let fromPrice: Price?
     public let priceLabel: String?
     public let discountLabel: String?
+    
+    public init(price: Price, fromPrice: Price?, priceLabel: String?, discountLabel: String?) {
+        self.price = price
+        self.fromPrice = fromPrice
+        self.priceLabel = priceLabel
+        self.discountLabel = discountLabel
+    }
 }

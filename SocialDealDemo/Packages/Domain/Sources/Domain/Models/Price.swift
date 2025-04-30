@@ -14,4 +14,9 @@ public struct Price: Codable, Equatable, Sendable {
     public var formattedString: String {
         return "\(currency.symbol)\(amount)"
     }
+    
+    public init(amount: Decimal, currency: Currency) {
+        self.amount = amount
+        self.currency = currency
+    }
 }

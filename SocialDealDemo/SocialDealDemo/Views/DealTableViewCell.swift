@@ -18,6 +18,8 @@ final class InsetsGroupedLayer: CALayer {
 class DealTableViewCell: UITableViewCell {
     static let reuseIdentifier = "DealCollectionCell"
     
+    private var deal: Deal?
+    
     private enum Constants {
         static let imageViewCornerRadius: CGFloat = 12
         static let imageViewAspectRatio: CGFloat = 3/5
@@ -30,6 +32,7 @@ class DealTableViewCell: UITableViewCell {
         InsetsGroupedLayer.self
     }
     
+    private var imageLoadTask: Task<Void, Never>?
     private let thumbnailView: LazyLoadingImageView = {
         let thumbnailView = LazyLoadingImageView()
         thumbnailView.translatesAutoresizingMaskIntoConstraints = false
@@ -40,8 +43,7 @@ class DealTableViewCell: UITableViewCell {
     private let favoriteButton: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
-        let heartImage = UIImage(systemName: "heart")
-        button.setImage(heartImage, for: .normal)
+        button.setImage(UIImage(systemName: "heart"), for: .normal)
         button.tintColor = .white
         return button
     }()
@@ -57,7 +59,7 @@ class DealTableViewCell: UITableViewCell {
         companyLabel.translatesAutoresizingMaskIntoConstraints = false
         companyLabel.font = .boldSystemFont(ofSize: UIFont.labelFontSize)
         companyLabel.numberOfLines = .zero
-        companyLabel.textColor = UIColor.secondaryLabelColor
+        companyLabel.textColor = UIColor.secondaryDealLabelColor
         return companyLabel
     }()
     private let cityLabel: UILabel = {
@@ -65,7 +67,7 @@ class DealTableViewCell: UITableViewCell {
         cityLabel.translatesAutoresizingMaskIntoConstraints = false
         cityLabel.font = .boldSystemFont(ofSize: UIFont.labelFontSize)
         cityLabel.numberOfLines = .zero
-        cityLabel.textColor = UIColor.secondaryLabelColor
+        cityLabel.textColor = UIColor.secondaryDealLabelColor
         return cityLabel
     }()
     private let soldLabel: UILabel = {
@@ -159,11 +161,15 @@ class DealTableViewCell: UITableViewCell {
             bottomLabelStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             bottomLabelStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         ])
+        
+        favoriteButton.addTarget(self, action: #selector(favoriteTapped), for: .touchUpInside)
+
     }
     
     public func configure(with deal: Deal) {
-        // TODO: Set the image
-        thumbnailView.load(deal.image)
+        self.deal = deal
+        imageLoadTask = thumbnailView.load(deal.image)
+        updateFavorite()
         titleLabel.text = deal.title
         companyLabel.text = deal.company
         cityLabel.text = deal.city
@@ -181,7 +187,7 @@ class DealTableViewCell: UITableViewCell {
         return NSMutableAttributedString(string: text, attributes: [
             .font: UIFont.boldSystemFont(ofSize: UIFont.labelFontSize),
             .strikethroughStyle: NSUnderlineStyle.single.rawValue,
-            .foregroundColor: UIColor.secondaryLabelColor ?? .systemGray
+            .foregroundColor: UIColor.secondaryDealLabelColor ?? .systemGray
         ])
     }
     
@@ -201,5 +207,31 @@ class DealTableViewCell: UITableViewCell {
         }
         
         return attributedString
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        imageLoadTask?.cancel()
+    }
+    
+    @objc func favoriteTapped() {
+        guard let deal else { return }
+        var favorites = UserDefaults.favorites
+        
+        if favorites.contains(where: { $0 == deal.unique }) {
+            favorites.removeAll(where: { $0 == deal.unique })
+        } else {
+            favorites.append(deal.unique)
+        }
+        
+        UserDefaults.favorites = favorites
+        updateFavorite()
+    }
+    
+    private func updateFavorite() {
+        let favorites = UserDefaults.favorites
+        guard let deal else { return }
+        let image = favorites.contains(where:  { $0 == deal.unique }) ? "heart.fill" : "heart"
+        favoriteButton.setImage(UIImage(systemName: image), for: .normal)
     }
 }

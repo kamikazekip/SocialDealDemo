@@ -9,6 +9,6 @@ import UIKit
 
 extension UIColor {
     static let priceLabelColor = UIColor(named: "PriceLabelColor")
-    static let secondaryLabelColor = UIColor(named: "SecondaryLabelColor")
+    static let secondaryDealLabelColor = UIColor(named: "SecondaryDealLabelColor")
     static let soldLabelColor = UIColor(named: "SoldLabelColor")
 }

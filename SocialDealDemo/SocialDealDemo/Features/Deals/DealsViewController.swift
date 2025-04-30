@@ -9,7 +9,7 @@ import UIKit
 
 class DealsViewController: UITableViewController {
     private let viewModel: DealsViewModel
-    
+        
     private let activityIndicator: UIActivityIndicatorView = {
         let activityIndicator = UIActivityIndicatorView(style: .large)
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
@@ -48,6 +48,8 @@ class DealsViewController: UITableViewController {
         tableView.register(DealTableViewCell.self, forCellReuseIdentifier: DealTableViewCell.reuseIdentifier)
         tableView.separatorStyle = .none
         tableView.directionalLayoutMargins = .init(top: .zero, leading: 12, bottom: .zero, trailing: 12)
+        tableView.estimatedRowHeight = 100
+        tableView.rowHeight = UITableView.automaticDimension
         
         view.addSubview(activityIndicator)
         view.addSubview(errorLabel)
@@ -83,6 +85,11 @@ class DealsViewController: UITableViewController {
             }
         }
     }
+    
+    public func refilterDeals() {
+        viewModel.filterDeals()
+        tableView.reloadData()
+    }
 }
 
 extension DealsViewController {
@@ -111,6 +118,9 @@ extension DealsViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
+        let deal = viewModel.deals[indexPath.section]
+        
+        let dealVC = DealViewController(initialDeal: deal)
+        navigationController?.pushViewController(dealVC, animated: true)
     }
 }

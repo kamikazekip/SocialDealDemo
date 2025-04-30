@@ -16,8 +16,12 @@ public actor ImageAPI {
     private init() {
     }
     
+    public func fetchImageFromCache(_ image: String) -> Data? {
+        return cache[image]
+    }
+    
     public func fetchImage(_ image: String) async throws -> Data {
-        if let cachedData = cache[image] {
+        if let cachedData = fetchImageFromCache(image) {
             return cachedData
         }
         

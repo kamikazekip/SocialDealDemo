@@ -5,12 +5,42 @@
 //  Created by Erik Brandsma on 27/04/2025.
 //
 
+import Domain
 import UIKit
 
 class MainTabBarController: UITabBarController {
     let deals: UIViewController = {
-        let deals = UINavigationController()
-        deals.viewControllers = [DealsViewController()]
+        let vc = DealsViewController()
+//        let vc = DealViewController(
+//            initialDeal: Deal(
+//                unique: "x6ji36jvyi4mj9fk",
+//                title: "Bioscoopticket + popcorn + drankje bij Corendon Cinema",
+//                image: "/deal/corendon-village-hotel-amsterdam-22113009143271.jpg",
+//                soldLabel: "Verkocht: 19",
+//                company: "Corendon Village Hotel Amsterdam",
+//                description: nil,
+//                city: "Badhoevedorp (7 km)",
+//                prices: Prices(
+//                    price: Price(
+//                        amount: 1250.000000,
+//                        currency: Currency(
+//                            symbol: "€",
+//                            code: "EUR"
+//                        )
+//                    ),
+//                    fromPrice: Price(
+//                        amount: 1700.000000,
+//                        currency: Currency(
+//                            symbol: "€",
+//                            code: "EUR"
+//                        )
+//                    ),
+//                    priceLabel: nil,
+//                    discountLabel: "26%"
+//                )
+//            )
+//        )
+        let deals = UINavigationController(rootViewController: vc)
         deals.tabBarItem = UITabBarItem(
             title: "Deals",
             image: UIImage(systemName: "tag"),
@@ -20,8 +50,9 @@ class MainTabBarController: UITabBarController {
     }()
     
     let favorites: UIViewController = {
-        let favorites = UINavigationController()
-        favorites.viewControllers = [FavoritesViewController()]
+        let favoritesVC = FavoritesViewController()
+        let favorites = UINavigationController(rootViewController: favoritesVC)
+        
         favorites.tabBarItem = UITabBarItem(
             title: "Favorites",
             image: UIImage(systemName: "heart"),

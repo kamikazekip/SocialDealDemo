@@ -28,22 +28,34 @@ public class LazyLoadingImageView: UIImageView {
     
     private func commonInit() {
         addSubview(activityIndicator)
+        
+        activityIndicator.constraintToCenter(of: self)
     }
     
-    public func load(_ image: String) {
+    @discardableResult
+    public func load(_ image: String) -> Task<Void, Never> {
         activityIndicator.isHidden = false
-        Task { [weak self] in
+        return Task { [weak self] in
             do {
                 let data = try await ImageAPI.shared.fetchImage(image)
-                let image = UIImage(data: data)
                 DispatchQueue.main.async {
-                    self?.image = image
+                    self?.setImage(data)
                 }
             } catch {
-                // TODO: Set image to an error
+                DispatchQueue.main.async {
+                    self?.activityIndicator.isHidden = true
+                    // TODO: Set image to an error
+                }
             }
-            
-            self?.activityIndicator.isHidden = true
         }
+    }
+    
+    public func setImage(_ image: Data) {
+        setImage(UIImage(data: image))
+    }
+    
+    public func setImage(_ image: UIImage?) {
+        self.image = image
+        activityIndicator.isHidden = true
     }
 }
