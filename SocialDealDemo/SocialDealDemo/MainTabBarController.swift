@@ -9,38 +9,12 @@ import Domain
 import UIKit
 
 class MainTabBarController: UITabBarController {
-    let deals: UIViewController = {
+    private let transitionRepository = TransitionRepository()
+    
+    lazy var deals: UIViewController = {
         let vc = DealsViewController()
-//        let vc = DealViewController(
-//            initialDeal: Deal(
-//                unique: "x6ji36jvyi4mj9fk",
-//                title: "Bioscoopticket + popcorn + drankje bij Corendon Cinema",
-//                image: "/deal/corendon-village-hotel-amsterdam-22113009143271.jpg",
-//                soldLabel: "Verkocht: 19",
-//                company: "Corendon Village Hotel Amsterdam",
-//                description: nil,
-//                city: "Badhoevedorp (7 km)",
-//                prices: Prices(
-//                    price: Price(
-//                        amount: 1250.000000,
-//                        currency: Currency(
-//                            symbol: "€",
-//                            code: "EUR"
-//                        )
-//                    ),
-//                    fromPrice: Price(
-//                        amount: 1700.000000,
-//                        currency: Currency(
-//                            symbol: "€",
-//                            code: "EUR"
-//                        )
-//                    ),
-//                    priceLabel: nil,
-//                    discountLabel: "26%"
-//                )
-//            )
-//        )
         let deals = UINavigationController(rootViewController: vc)
+        deals.delegate = transitionRepository
         deals.tabBarItem = UITabBarItem(
             title: "Deals",
             image: UIImage(systemName: "tag"),
@@ -49,23 +23,21 @@ class MainTabBarController: UITabBarController {
         return deals
     }()
     
-    let favorites: UIViewController = {
+    lazy var favorites: UIViewController = {
         let favoritesVC = FavoritesViewController()
-        let favorites = UINavigationController(rootViewController: favoritesVC)
-        
-        favorites.tabBarItem = UITabBarItem(
-            title: "Favorites",
+        favoritesVC.tabBarItem = UITabBarItem(
+            title: "Favorieten",
             image: UIImage(systemName: "heart"),
             selectedImage: UIImage(systemName: "heart.fill")
         )
-        return favorites
+        return favoritesVC
     }()
     
     let settings: UIViewController = {
         let settings = UINavigationController()
         settings.viewControllers = [SettingsViewController()]
         settings.tabBarItem = UITabBarItem(
-            title: "Settings",
+            title: "Instellingen",
             image: UIImage(systemName: "gearshape"),
             selectedImage: UIImage(systemName: "gearshape.fill")
         )

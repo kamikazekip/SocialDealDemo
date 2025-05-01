@@ -8,26 +8,29 @@
 import UIKit
 
 class FavoritesViewController: UIViewController {
-    let child = DealsViewController(viewModel: DealsViewModel(showOnlyFavorites: true))
+    let transitionRepository = TransitionRepository()
+    let dealsVC = DealsViewController(viewModel: DealsViewModel(showOnlyFavorites: true))
+    lazy var navController = UINavigationController(rootViewController: dealsVC)
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        navController.delegate = transitionRepository
         setupView()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        child.refilterDeals()
+        dealsVC.refilterDeals()
     }
     
     private func setupView() {
-        navigationItem.title = "Favorites"
+        navigationItem.title = "Favorieten"
         
-        addChild(child)
+        addChild(navController)
         
-        view.addSubview(child.view)
-        child.view.frame = view.bounds // or setup constraints
-        child.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        child.didMove(toParent: self)
+        view.addSubview(navController.view)
+        navController.view.frame = view.bounds // or setup constraints
+        navController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        navController.didMove(toParent: self)
     }
 }

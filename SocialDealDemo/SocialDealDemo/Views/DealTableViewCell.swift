@@ -33,14 +33,14 @@ class DealTableViewCell: UITableViewCell {
     }
     
     private var imageLoadTask: Task<Void, Never>?
-    private let thumbnailView: LazyLoadingImageView = {
+    let thumbnailView: LazyLoadingImageView = {
         let thumbnailView = LazyLoadingImageView()
         thumbnailView.translatesAutoresizingMaskIntoConstraints = false
         thumbnailView.layer.cornerRadius = Constants.imageViewCornerRadius
         thumbnailView.clipsToBounds = true
         return thumbnailView
     }()
-    private let favoriteButton: UIButton = {
+    let favoriteButton: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setImage(UIImage(systemName: "heart"), for: .normal)
@@ -122,6 +122,10 @@ class DealTableViewCell: UITableViewCell {
         commonInit()
     }
     
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
     private func commonInit() {
         contentView.addSubview(thumbnailView)
         contentView.addSubview(favoriteButton)
@@ -163,10 +167,10 @@ class DealTableViewCell: UITableViewCell {
         ])
         
         favoriteButton.addTarget(self, action: #selector(favoriteTapped), for: .touchUpInside)
-
     }
     
     public func configure(with deal: Deal) {
+        
         self.deal = deal
         imageLoadTask = thumbnailView.load(deal.image)
         updateFavorite()
@@ -174,9 +178,27 @@ class DealTableViewCell: UITableViewCell {
         companyLabel.text = deal.company
         cityLabel.text = deal.city
         soldLabel.text = deal.soldLabel
+        updatePrices()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(handleCurrencyChanged), name: .currencyChanged, object: nil)
+    }
+    
+    @objc private func handleCurrencyChanged(notification: Notification) {
+        updatePrices()
+    }
+    
+    private func updatePrices() {
+        guard let deal else {
+            return
+        }
+        
+        let currency = Currency.getCurrencyFromSymbol(UserDefaults.currency)
+        let fromPriceString = deal.prices.fromPrice?.formattedString(using: currency)
+        let priceLabelString = deal.prices.price.formattedString(using: currency)
+        
         fromPriceLabel.isHidden = deal.prices.fromPrice == nil
-        fromPriceLabel.attributedText = fromPriceLabelAttributedText(deal.prices.fromPrice?.formattedString)
-        priceLabel.attributedText = priceLabelAttributedText(deal.prices.price.formattedString)
+        fromPriceLabel.attributedText = fromPriceLabelAttributedText(fromPriceString)
+        priceLabel.attributedText = priceLabelAttributedText(priceLabelString)
     }
     
     private func fromPriceLabelAttributedText(_ text: String?) -> NSAttributedString? {

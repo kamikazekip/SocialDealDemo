@@ -24,26 +24,23 @@ class DealsViewController: UITableViewController {
         label.numberOfLines = 0
         return label
     }()
+    
+    private(set) var selectedDealCell: DealTableViewCell?
         
     init(viewModel: DealsViewModel = DealsViewModel()) {
         self.viewModel = viewModel
         super.init(style: .insetGrouped)
-        commonInit()
     }
     
     required init?(coder: NSCoder) {
         self.viewModel = DealsViewModel()
         super.init(style: .insetGrouped)
-        commonInit()
-    }
-    
-    private func commonInit() {
-        navigationItem.title = "Deals"
-        navigationItem.largeTitleDisplayMode = .automatic
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationItem.title = viewModel.showOnlyFavorites ? "Favorieten" : "Deals"
+
         tableView.backgroundColor = .systemBackground
         tableView.register(DealTableViewCell.self, forCellReuseIdentifier: DealTableViewCell.reuseIdentifier)
         tableView.separatorStyle = .none
@@ -64,6 +61,11 @@ class DealsViewController: UITableViewController {
         ])
         
         fetchDeals()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.navigationBar.isTranslucent = false
     }
     
     private func fetchDeals() {
@@ -120,7 +122,21 @@ extension DealsViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let deal = viewModel.deals[indexPath.section]
         
+        selectedDealCell = tableView.cellForRow(at: indexPath) as? DealTableViewCell
+        
         let dealVC = DealViewController(initialDeal: deal)
         navigationController?.pushViewController(dealVC, animated: true)
+    }
+    
+    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let offsetY = scrollView.contentOffset.y
+        let contentHeight = scrollView.contentSize.height
+        let height = scrollView.frame.size.height
+
+        if offsetY > contentHeight - height * 2 {
+            if viewModel.loadMoreItems() {
+                tableView.reloadData()
+            }
+        }
     }
 }

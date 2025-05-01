@@ -26,7 +26,7 @@ class DealViewController: UIViewController, WKNavigationDelegate {
         contentView.translatesAutoresizingMaskIntoConstraints = false
         return contentView
     }()
-    private let imageView: LazyLoadingImageView = {
+    let imageView: LazyLoadingImageView = {
         let imageView = LazyLoadingImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
@@ -39,7 +39,7 @@ class DealViewController: UIViewController, WKNavigationDelegate {
             let css = """
                html { font-size: 40px !important; }
                """
-               let js = """
+            let js = """
                var style = document.createElement('style');
                style.innerHTML = `\(css)`;
                document.head.appendChild(style);
@@ -62,6 +62,14 @@ class DealViewController: UIViewController, WKNavigationDelegate {
         return activityIndicator
     }()
     var webViewHeightConstraint: NSLayoutConstraint!
+    lazy var imageViewConstraints: [NSLayoutConstraint] = {
+        [
+            imageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: .standardPadding),
+            imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            imageView.heightAnchor.constraint(equalTo: imageView.widthAnchor, multiplier: Constants.imageViewAspectRatio)
+        ]
+    }()
     
     init(initialDeal: Deal) {
         self.viewModel = DealViewModel(initialDeal: initialDeal)
@@ -88,7 +96,7 @@ class DealViewController: UIViewController, WKNavigationDelegate {
         
         descriptionView.addSubview(descriptionActivityIndicator)
         descriptionView.navigationDelegate = self
-
+        
         scrollView.constraint(to: view)
         contentView.constraint(to: scrollView)
         
@@ -96,11 +104,6 @@ class DealViewController: UIViewController, WKNavigationDelegate {
         NSLayoutConstraint.activate([
             contentView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
             contentView.centerYAnchor.constraint(equalTo: scrollView.centerYAnchor),
-            
-            imageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: .standardPadding),
-            imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            imageView.heightAnchor.constraint(equalTo: imageView.widthAnchor, multiplier: Constants.imageViewAspectRatio),
             
             descriptionView.topAnchor.constraint(equalTo: imageView.bottomAnchor),
             descriptionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
@@ -110,7 +113,7 @@ class DealViewController: UIViewController, WKNavigationDelegate {
             descriptionActivityIndicator.bottomAnchor.constraint(equalTo: descriptionView.bottomAnchor),
             descriptionActivityIndicator.leadingAnchor.constraint(equalTo: descriptionView.leadingAnchor),
             descriptionActivityIndicator.trailingAnchor.constraint(equalTo: descriptionView.trailingAnchor),
-        ])
+        ] + imageViewConstraints)
         
         webViewHeightConstraint = descriptionView.heightAnchor.constraint(equalToConstant: 50)
         webViewHeightConstraint.isActive = true
@@ -118,7 +121,7 @@ class DealViewController: UIViewController, WKNavigationDelegate {
     
     public func configureWithInitialDeal()  {
         navigationItem.title = viewModel.initialDeal.title
-
+        
         Task { @MainActor in
             if let imageData = await viewModel.fetchImageFromCache() {
                 imageView.setImage(imageData)
@@ -136,7 +139,7 @@ class DealViewController: UIViewController, WKNavigationDelegate {
                 let fullDeal = try await viewModel.fetchFullDeal()
                 descriptionView.loadHTMLString(fullDeal.description ?? "Lege description", baseURL: nil)
                 descriptionActivityIndicator.isHidden = true
-
+                
             } catch {
                 present(UIAlertController(title: "Kan volledige deal niet ophalen", message: error.localizedDescription, preferredStyle: .alert), animated: true)
             }
