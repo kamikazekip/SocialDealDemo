@@ -48,7 +48,7 @@ class DealsViewModel {
     }
     
     func loadMoreItems() -> Bool {
-        guard currentPrefetch <= allDeals.count else {
+        guard currentPrefetch <= filteredDeals.count else {
             return false
         }
         currentPrefetch += 20

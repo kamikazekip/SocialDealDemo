@@ -16,9 +16,13 @@ final class InsetsGroupedLayer: CALayer {
 }
 
 class DealTableViewCell: UITableViewCell {
+    final class Events {
+        var onFavoriteChanged: (() -> Void)?
+    }
     static let reuseIdentifier = "DealCollectionCell"
     
     private var deal: Deal?
+    let events = Events()
     
     private enum Constants {
         static let imageViewCornerRadius: CGFloat = 12
@@ -247,6 +251,7 @@ class DealTableViewCell: UITableViewCell {
         }
         
         UserDefaults.favorites = favorites
+        events.onFavoriteChanged?()
         updateFavorite()
     }
     

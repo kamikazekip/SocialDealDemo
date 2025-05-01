@@ -44,7 +44,6 @@ public class LazyLoadingImageView: UIImageView {
             } catch {
                 DispatchQueue.main.async {
                     self?.activityIndicator.isHidden = true
-                    // TODO: Set image to an error
                 }
             }
         }

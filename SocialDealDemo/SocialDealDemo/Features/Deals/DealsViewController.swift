@@ -106,6 +106,11 @@ extension DealsViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: DealTableViewCell.reuseIdentifier, for: indexPath) as! DealTableViewCell
         cell.configure(with: viewModel.deals[indexPath.section])
+        cell.events.onFavoriteChanged = { [weak self] in
+            if self?.viewModel.showOnlyFavorites ?? false {
+                self?.refilterDeals()
+            }
+        }
         return cell
     }
     
@@ -135,6 +140,7 @@ extension DealsViewController {
 
         if offsetY > contentHeight - height * 2 {
             if viewModel.loadMoreItems() {
+                print("Loading more")
                 tableView.reloadData()
             }
         }

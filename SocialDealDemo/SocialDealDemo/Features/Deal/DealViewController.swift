@@ -62,15 +62,7 @@ class DealViewController: UIViewController, WKNavigationDelegate {
         return activityIndicator
     }()
     var webViewHeightConstraint: NSLayoutConstraint!
-    lazy var imageViewConstraints: [NSLayoutConstraint] = {
-        [
-            imageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: .standardPadding),
-            imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            imageView.heightAnchor.constraint(equalTo: imageView.widthAnchor, multiplier: Constants.imageViewAspectRatio)
-        ]
-    }()
-    
+
     init(initialDeal: Deal) {
         self.viewModel = DealViewModel(initialDeal: initialDeal)
         super.init(nibName: nil, bundle: nil)
@@ -98,22 +90,30 @@ class DealViewController: UIViewController, WKNavigationDelegate {
         descriptionView.navigationDelegate = self
         
         scrollView.constraint(to: view)
-        contentView.constraint(to: scrollView)
         
         
         NSLayoutConstraint.activate([
-            contentView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
-            contentView.centerYAnchor.constraint(equalTo: scrollView.centerYAnchor),
+            contentView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
+            contentView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
+            contentView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor),
+            
+            imageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: .standardPadding),
+            imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            imageView.heightAnchor.constraint(equalTo: imageView.widthAnchor, multiplier: Constants.imageViewAspectRatio),
             
             descriptionView.topAnchor.constraint(equalTo: imageView.bottomAnchor),
             descriptionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             descriptionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            
+            descriptionView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+
             descriptionActivityIndicator.topAnchor.constraint(equalTo: descriptionView.topAnchor),
             descriptionActivityIndicator.bottomAnchor.constraint(equalTo: descriptionView.bottomAnchor),
             descriptionActivityIndicator.leadingAnchor.constraint(equalTo: descriptionView.leadingAnchor),
             descriptionActivityIndicator.trailingAnchor.constraint(equalTo: descriptionView.trailingAnchor),
-        ] + imageViewConstraints)
+        ])
         
         webViewHeightConstraint = descriptionView.heightAnchor.constraint(equalToConstant: 50)
         webViewHeightConstraint.isActive = true
@@ -147,7 +147,6 @@ class DealViewController: UIViewController, WKNavigationDelegate {
     }
     
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        // Ask web content its height
         webView.evaluateJavaScript("document.body.scrollHeight") { [weak self] result, error in
             guard let self = self else { return }
             if let height = result as? CGFloat {
